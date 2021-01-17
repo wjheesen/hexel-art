@@ -1,0 +1,1 @@
+Like pixel art, but with hexagons (or "hexels") instead of pixels. [The app](https://wjheesen.github.io/hexelart/) was last updated in 2017. The new version underway will address shaky zoom issues on mobile and will use WebGL instancing to increase grid size (currently 512 x 512).
