@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wjh:program name="HexelProgram"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://wjheesen.github.io/xsd/program program.xsd"
+  xmlns:wjh ="http://wjheesen.github.io/xsd/program">
+
+  <wjh:vertexShader precision="medium">
+    <wjh:uniform name="u_tex" type="sampler2D" />
+    <wjh:uniform name="u_projection" type="mat4" />
+    <wjh:uniform name="u_basePosition" type="vec2" />
+    <wjh:uniform name="u_baseTexCoord" type="vec2" />
+    <wjh:attribute name="a_position" type="vec2"/>
+    <wjh:attribute name="a_texCoord" type="vec2"/>
+    <wjh:attribute name="a_gradient" type="float"/>
+    <wjh:varying name="v_color" type="vec4"/>
+    <wjh:main>
+      <!--Compute gl_Position-->
+      gl_Position.xy = u_basePosition + a_position; <!--World space-->
+      gl_Position.z = 1.0;
+      gl_Position.w = 1.0;
+      gl_Position = u_projection * gl_Position;     <!--NDC Space-->
+      <!--Compute v_color-->
+      v_color = texture2D(u_tex, u_baseTexCoord + a_texCoord);
+      v_color.r += a_gradient;
+      v_color.g += a_gradient;
+      v_color.b += a_gradient;
+      v_color.a = 1.0;
+    </wjh:main>
+  </wjh:vertexShader>
+
+  <wjh:fragmentShader precision="medium">
+    <wjh:varying name="v_color" type="vec4"/>
+    <wjh:main>
+      gl_FragColor = v_color;
+    </wjh:main>
+  </wjh:fragmentShader>
+
+</wjh:program>
+
