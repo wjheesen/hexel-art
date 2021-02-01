@@ -3,7 +3,7 @@ import { Scene } from './hexel/scene';
 
 let canvasEl = <HTMLCanvasElement> document.getElementById('onscreen-canvas');
 let camera = new Camera(new Rect(-1, 1, 1, -1), 0.5, 10);
-let renderer = new Renderer(canvasEl.getContext('webgl2'), camera);
+let renderer = new Renderer(canvasEl.getContext('webgl'), camera);
 let hexMesh =  PolygonMesh.regularPolygon(6);
 let util = new ProgramUtil(renderer.gl);
 let matBuf = Mat2dBuffer.withLength(1);

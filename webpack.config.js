@@ -4,7 +4,6 @@ module.exports = {
     mode: 'development',
     entry: './src/index.ts',
     devtool: 'source-map',
-    watch: true,
     module: {
         rules: [{
             test: /\.ts$/,
@@ -19,4 +18,11 @@ module.exports = {
         filename: 'index.js',
         path: path.resolve(__dirname, 'docs'),
     },
+    devServer: {
+        port: 3000,
+        contentBase: path.resolve(__dirname, 'docs'),
+        hot: true,
+        compress: true,
+        open: true,
+    }
 };
