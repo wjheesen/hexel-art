@@ -1,13 +1,14 @@
 const path = require('path');
 
 module.exports = {
+    mode: 'development',
     entry: './src/index.ts',
     devtool: 'source-map',
     watch: true,
     module: {
         rules: [{
             test: /\.ts$/,
-            use: 'ts-loader',
+            use: { loader: 'ts-loader', options: {onlyCompileBundledFiles: true}},
             exclude: /node_modules/,
         }, ],
     },
