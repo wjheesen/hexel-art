@@ -1,4 +1,4 @@
-﻿import { Grid, H_RIGHT, H_UP } from '../hexel/grid'
+﻿import { HexelGrid, H_RIGHT, H_UP } from '../hexel/hexel-grid'
 import { Struct as Mat4 } from '../graphics/struct/mat4';
 import * as Vec2 from '../graphics/struct/vec2';
 import * as Point from '../graphics/struct/point'
@@ -21,7 +21,7 @@ export class HexelProgram extends Program<Uniforms, Attribs, Bindings>{
     /**
      * The hexel grid being rendered
      */
-    private grid: Grid;
+    private grid: HexelGrid;
 
     /**
      * The number of sections in which the grid must be rendered.
@@ -60,7 +60,7 @@ export class HexelProgram extends Program<Uniforms, Attribs, Bindings>{
      */
     private baseTexCoord = new Vec2.Struct();
 
-    static create(gl: WebGLRenderingContext, layout: Grid): HexelProgram {
+    static create(gl: WebGLRenderingContext, layout: HexelGrid): HexelProgram {
 
         // Create program info
         let programInfo = createProgramInfo(gl, Source);
@@ -161,7 +161,7 @@ export class HexelProgram extends Program<Uniforms, Attribs, Bindings>{
     /**
      * Sets a new hexel grid layout.
      */
-    setLayout(gl: WebGLRenderingContext, layout: Grid) {
+    setLayout(gl: WebGLRenderingContext, layout: HexelGrid) {
         this.grid = layout;
         // Calculate number of grid sections:
         // cols    rows        size    sections    hexels
@@ -212,8 +212,8 @@ export class HexelProgram extends Program<Uniforms, Attribs, Bindings>{
     draw(gl: WebGLRenderingContext, projection: Projection) {
         // Determine which sections we need to render
         let proj = projection.region, grid = this.grid;
-        let topRow = grid.pointToHex(Point.Obj.create$(0, proj.top)).r - 1;    // Pad for edge cases
-        let botRow = grid.pointToHex(Point.Obj.create$(0, proj.bottom)).r + 1; // Pad for edge cases
+        let topRow = grid.cubeAtPoint(Point.Obj.create$(0, proj.top)).r - 1;    // Pad for edge cases
+        let botRow = grid.cubeAtPoint(Point.Obj.create$(0, proj.bottom)).r + 1; // Pad for edge cases
         let topSection = Math.max(0, Math.floor(topRow / this.rowsPerSection));
         let botSection = Math.min(this.sectionsPerGrid, Math.ceil(botRow / this.rowsPerSection));
         //console.log('top row', topRow, 'bot row', botRow);

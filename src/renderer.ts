@@ -1,4 +1,4 @@
-﻿import { Grid, H_WIDTH } from './hexel/grid';
+﻿import { HexelGrid, H_WIDTH } from './hexel/hexel-grid';
 
 import { EllipseProgram } from './program/ellipse';
 import { LineProgram } from './program/line';
@@ -47,7 +47,7 @@ export class HexelRenderer extends Renderer<Programs, Drawables> {
      * @param layout the initial hexel layout.
      * @param models the type of shapes that can be rendered. 
      */
-    static create(gl: WebGLRenderingContext, grid: Grid, models: Model[]) {
+    static create(gl: WebGLRenderingContext, grid: HexelGrid, models: Model[]) {
         // Init projection
         let maxZoom = Math.max(grid.rows, grid.cols);
         let projection = new Projection(grid.bounds, 1, maxZoom);

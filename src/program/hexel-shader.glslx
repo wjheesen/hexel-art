@@ -1,0 +1,28 @@
+precision mediump float;
+
+/** Maps from world space to clip space */
+uniform mat4 projection;
+/** Color of hexel (before gradient applied) */
+attribute vec4 hexelColor;
+/** Position of current vertex in model space */
+attribute vec2 position;
+/** Instanced translation vector that maps vertex from model space to world space */
+attribute vec2 offset;
+/** Gradient to apply at this vertex */
+attribute float gradient;
+/** Color at this vertex (after gradient applied) */
+varying vec4 color;
+
+export void vertex() {
+    gl_Position = projection * vec4(position + offset, 1.0, 1.0);
+    // Apply gradient
+    color = hexelColor;
+    color.r += gradient;
+    color.g += gradient;
+    color.b += gradient;
+    color.a = 1.0;
+}
+
+export void fragment() {
+    gl_FragColor = color;
+}

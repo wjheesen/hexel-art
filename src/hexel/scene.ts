@@ -1,11 +1,11 @@
 import { Drawable, FillProgram, Mat2dBuffer, PolygonModel, Renderer } from "@wjheesen/glib";
+import { HexelProgram } from "../program/hexel-program";
+import { HexelGrid } from "./hexel-grid";
 
 export class Scene implements Drawable {
 
     constructor(
-        private fill: FillProgram,
-        private hexagon: PolygonModel,
-        private matrices: Mat2dBuffer
+        private hexel: HexelProgram,
     ) {}
 
     draw(renderer: Renderer): void {
@@ -15,6 +15,6 @@ export class Scene implements Drawable {
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.BACK);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-        this.fill.draw(renderer, this.hexagon.mesh, this.matrices);
+        this.hexel.draw(renderer);
     }
 }

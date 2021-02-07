@@ -19,7 +19,7 @@ import * as Color from './graphics/struct/color'
 import { Projection } from './graphics/rendering/projection';
 import { Surface, Tool, Action, TouchAction, MouseAction, Status, addSurfaceListener } from './graphics/rendering/surface';
 
-import { Grid, H_WIDTH, copyPixelsToGrid, copyHexelsToCanvas } from './hexel/grid';
+import { HexelGrid, H_WIDTH, copyPixelsToGrid, copyHexelsToCanvas } from './hexel/hexel-grid';
 
 declare const vex: any;
 vex.defaultOptions.className = 'vex-theme-wireframe';
@@ -132,9 +132,9 @@ const Brush: Tool = {
 
     onStart(action: Action) {
         // Get current point in cubic space, rounded
-        let current = grid.pointToHex(action.pointers[0]).round();
+        let current = grid.cubeAtPoint(action.pointers[0]).round();
         // Find index of the corresponding hexagon
-        let index = grid.indexOfCube(current);
+        let index = grid.indexAtCube(current);
         //console.log('pt', action.pointers[0], 'cube', current, 'index', index);
         // If found
         if (index !== -1) {
@@ -152,7 +152,7 @@ const Brush: Tool = {
             this.onStart(action);
         } else {
             // Get current point in cubic space, rounded
-            let current = grid.pointToHex(action.pointers[0]).round();
+            let current = grid.cubeAtPoint(action.pointers[0]).round();
             // If current point differs from previous point
             if (!current.equals(this.previous)) {
                 // Add stroke from previous point to current point
@@ -181,7 +181,7 @@ const PaintBucket: Tool = {
         // Get current point
         let current = action.pointers[0];
         // Find index of the corresponding hexagon
-        let index = grid.indexOfHexel(current);
+        let index = grid.indexAtPoint(current);
         // If found
         if (index !== -1) {
             let result = grid.floodFill(index, drawColor.val);
@@ -203,7 +203,7 @@ const ColorSampler: Tool = {
         // Get current point
         let current = action.pointers[0];
         // Find index of the corresponding hexagon
-        let index = grid.indexOfHexel(current);
+        let index = grid.indexAtPoint(current);
         if (grid.hexels.moveToPosition(index)) {
             setDrawColor(grid.hexels);
             unconfirmedAlpha = drawColor.val.a / 0xff;
@@ -366,7 +366,7 @@ const onScreenCvs = <HTMLCanvasElement>document.getElementById("onscreen-canvas"
 const gl = onScreenCvs.getContext('webgl'/*, { alpha: false }*/);
 
 // Init Grid
-let grid = new Grid(numColumns.val, numRows.val);
+let grid = new HexelGrid(numColumns.val, numRows.val);
 grid.clear(ClearColor);
 grid.hasGradient = shadowsEnabled.val;
 
@@ -831,7 +831,7 @@ function initOptionsDialog() {
                 // Save handle to old grid
                 let oldGrid = grid;
                 // Create new grid 
-                grid = new Grid(cols, rows);
+                grid = new HexelGrid(cols, rows);
                 grid.clear(ClearColor);
                 grid.hasGradient = oldGrid.hasGradient;
                 // Copy data from old color buffer
