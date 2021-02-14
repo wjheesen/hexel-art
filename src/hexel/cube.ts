@@ -23,7 +23,7 @@ export class Cube {
         /** This cube's position on the R axis. */
         public r = 0, 
         /** This cube's position on the S axis. */
-        public s = 0
+        public s = -q - r
     ) {}
 
     /**
@@ -40,7 +40,7 @@ export class Cube {
      * @returns the index of the direction in the `Directions` array, or -1 if the cube is not a neighbor.
      */
     getDirection(neighbor: Cube) {
-        let diff = neighbor.subtract(this);
+        let diff = neighbor.subtract(this, new Cube);
         for (let i = 0; i < Directions.length; i++) {
             if (Directions[i].equals(diff)) {
                 return i;

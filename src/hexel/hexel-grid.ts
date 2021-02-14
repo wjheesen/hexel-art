@@ -40,6 +40,12 @@ export class HexelGrid {
     /** The color of each of the hexagons on this grid, beginning at the first row and first column. */
     public hexels: ColorBuffer<Uint8ClampedArray>;
 
+    /** True if this grid has color changes that have not yet been applied */
+    public hasHexelChanges = true;
+
+    /** True if this grid has layout changes that have not yet been applied */
+    public hasLayoutChanges = true;
+
     /** Whether or not this grid has a gradient. */
     public hasGradient = true;
 
@@ -136,6 +142,12 @@ export class HexelGrid {
         let r = (H_HEIGHT * y) / 3;
         // Return unrounded cube
         return Cube.create(q, r, out);
+    }
+
+    hexelAtPoint(p: Point.Like): Color.Like | null {
+        let cube = this.cubeAtPoint(p).round();
+        let index = this.indexAtCube(cube);
+        return index === -1 ? null : this.hexels.at(index);
     }
 
     /*** Gets the point at the center of each hexel on this grid. */
@@ -261,94 +273,12 @@ export class HexelGrid {
     }
 
     /**
-     * Sets the color of each of the hexels within the specified hexagon
-     * @param center the cubic coordinate of the hexel at the center of the hexagon.
-     * @param radius the radius of the hexagon out from the center.
-     * @param color the color to use.
-     * @param record where to keep a record of changes.
-     * @returns a record of every hexel that was changed.
-     */
-    beginStroke(center: Cube, radius: number, color: Color.Like, record = this.bitArray()) {
-
-        // this.forEachHexelInRange(center, radius, (index) => {
-        //     if (this.hexels.moveToPosition(index)) {
-        //         this.hexels.$blend(color);
-        //         record.set(index);
-        //     }
-        // })
-
-        // return record;
-    }
-
-    /**
-     * Sets the color of each of the hexels in the specified stroke.
-     * @param start the cubic coordinate of the hexel where the stroke begins.
-     * @param end the cubic coordinate of the hexel where the stroke ends.
-     * @param radius radius of stroke, measured in hexels.
-     * @param color the color to use.
-     * @param record where to keep a record of changes.
-     * @returns a record of every hexel that was changed.
-     */
-    continueStroke(start: Cube, end: Cube, radius: number, color: Color.Like, record = this.bitArray()) {
-        
-        let last = start
-
-        this.forEachCubeInLine(start, end, (c) => {
-            this.appendHexagon(last, c, radius, color, record);
-            last = c;
-        });
-
-        return record;
-    }
-
-    appendHexagon(last: Cube, center: Cube, radius: number, color: Color.Like, record = this.bitArray()) {
-        // if (radius === 0) {
-        //     // Check center
-        //     let index = this.indexOfCube(center);
-        //     if (index !== -1 && !record.get(index) && this.hexels.moveToPosition(index)) {
-        //         this.hexels.$blend(color);
-        //         record.set(index);
-        //     }
-        // } else {
-        //     // Get index d of direction(last, center)
-        //     const d = last.getDirection(center);
-        //     // Return if center is not a neighbor
-        //     if (d === -1) return;
-        //     // Move to first cube on outer ring:
-        //     // cube = center + radius * direction(d > 0 ? d - 1 : 5) //(CW 1)
-        //     let cube = new Cube();
-        //     cube.add(Directions[d > 0 ? d - 1 : 5]); 
-        //     cube.scale(radius)
-        //     cube.add(center);
-        //     // Check initial cube
-        //     let index = this.indexOfCube(cube);
-        //     if (index !== -1 && !record.get(index) && this.hexels.moveToPosition(index)) {
-        //         this.hexels.$blend(color);
-        //         record.set(index);
-        //     }
-        //     // for each d+1 ≤ i < d+3: (CCW 1)
-        //     for (let i = d + 1; i < d + 3; i++) {
-        //         for (let j = 0; j < radius; j++) {
-        //             // Set cube to neighbor 
-        //             cube.getNeighbor(i % 6, cube) 
-        //             // Check cube
-        //             let index = this.indexOfCube(cube);
-        //             if (index !== -1 && !record.get(index) && this.hexels.moveToPosition(index)) {
-        //                 this.hexels.$blend(color);
-        //                 record.set(index);
-        //             }
-        //         }
-        //     }
-        // }
-    }
-
-    /**
      * Invokes the specified callback function on each of the hexels within a specified range.
      * @param center the cubic coordinate of the hexel at the center of the range
      * @param radius the radius of the range out from the center.
      * @param callback the callback to invoke with the index of each hexel.
      */
-    forEachHexelInRange(center: Cube, radius: number, callback: (index: number) => void) {
+    forEachHexelInRange(center: Cube, radius: number, callback: (hexel: Color.Like) => void) {
         let cube = new Cube();
         // Moving from left to right
         for (let q = -radius; q <= radius; q++) {
@@ -362,7 +292,7 @@ export class HexelGrid {
                 let index = this.indexAtCube(cube);
                 if (index !== -1) {
                     // Invoke callback on hexel index
-                    callback(index);
+                    callback(this.hexels.at(index));
                 }
             }
         }
@@ -412,7 +342,7 @@ export class HexelGrid {
      */
     forEachCubeInLine(start: Cube, end: Cube, callback: (c: Cube) => void) {
         // Paramaterize line to start + bt, 0<=t<=1
-        let b = new Cube(end.q - start.q, end.r - start.r);
+        let b = end.subtract(start, new Cube);
         // Compute length of line (in terms of cubes traversed)
         let length = Cube.distance(b, new Cube);
         // Determine the length of each step

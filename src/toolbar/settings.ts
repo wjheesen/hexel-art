@@ -3,6 +3,7 @@ import { Control } from "./control";
 
 export class Settings {
     color = <Color.Like> {r: 39, g: 78, b: 19, a: 255};
+    brushRadius = 2;
 
     initControls(controls: Control[]) {
         controls.forEach(control => control.onInit());

@@ -6,7 +6,12 @@ export class Scene implements Drawable {
 
     constructor(
         private hexel: HexelProgram,
+        private grid: HexelGrid,
     ) {}
+
+    hasRenderRequest() {
+        return this.grid.hasHexelChanges || this.grid.hasLayoutChanges;
+    }
 
     draw(renderer: Renderer): void {
         let { gl } = renderer;

@@ -5,16 +5,17 @@ import * as Shader from './hexel-shader';
 export class HexelProgram extends Program<Shader.Uniforms, Shader.Attributes> {
 
     private hex: PolygonMesh;
+    private grid: HexelGrid;
     private indexBuffer: WebGLBuffer;
     private positionBuffer: WebGLBuffer;
     private offsetBuffer: WebGLBuffer;
     private colorBuffer: WebGLBuffer;
     private gradientBuffer: WebGLBuffer;
-    private grid?: HexelGrid;
     
-    static create(util: ProgramUtil, hex: PolygonMesh) {
+    static create(util: ProgramUtil, hex: PolygonMesh, grid: HexelGrid) {
         let program = new HexelProgram;
         program.hex = hex;
+        program.grid = grid;
         program.location = util.createProgramFromSources(Shader.vertex, Shader.fragment);
         program.uniforms = util.getUniformLocationMap(program.location, Shader.uniformRenaming) as Shader.Uniforms;
         program.attribs = util.getAttributeLocationMap(program.location, Shader.attributeRenaming) as Shader.Attributes;
@@ -30,14 +31,6 @@ export class HexelProgram extends Program<Shader.Uniforms, Shader.Attributes> {
         // Formula: 2*n^2, n=3,4,5
         let g1 = 18 / 256, g2 = 32 / 256, g3 = 50 / 256;
         return new Float32Array([g1, g2, g3, -g1, -g2, -g3]);
-    }
-
-    setGrid(gl: WebGLRenderingContext, grid: HexelGrid) {
-        this.grid = grid;
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, grid.hexels.data, gl.DYNAMIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.offsetBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, grid.points().data, gl.STATIC_DRAW);
     }
 
     onAttach(renderer: Renderer) {
@@ -88,11 +81,25 @@ export class HexelProgram extends Program<Shader.Uniforms, Shader.Attributes> {
         let {gl, angleExt} = renderer;
         renderer.useProgram(this);
         this.loadProjection(gl, renderer.camera.matrix);
-        angleExt.drawElementsInstancedANGLE(gl.TRIANGLES, this.hex.indices.length, gl.UNSIGNED_SHORT, this.hex.indexBufferOffset, this.grid.hexels.length); // TODO: use grid.colors.length
+        if (this.grid.hasHexelChanges) this.loadHexels(gl);
+        if (this.grid.hasLayoutChanges) this.loadLayout(gl);
+        angleExt.drawElementsInstancedANGLE(gl.TRIANGLES, this.hex.indices.length, gl.UNSIGNED_SHORT, this.hex.indexBufferOffset, this.grid.hexels.length); 
         // angleExt.drawArraysInstancedANGLE(gl.TRIANGLE_STRIP, 0, vertices.length, matrices.length); // TODO: try
     }
 
     private loadProjection(gl: WebGLRenderingContext, projection: Float32Array) {
         gl.uniformMatrix4fv(this.uniforms.projection, false, projection);
+    }
+
+    private loadLayout(gl: WebGLRenderingContext) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.offsetBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.grid.points().data, gl.STATIC_DRAW);
+        this.grid.hasLayoutChanges = false;
+    }
+
+    private loadHexels(gl: WebGLRenderingContext) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.grid.hexels.data, gl.DYNAMIC_DRAW);
+        this.grid.hasHexelChanges = false;
     }
 }
