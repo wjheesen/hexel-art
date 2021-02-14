@@ -2,6 +2,8 @@ import { Camera,  Renderer, Surface, Rect, PolygonMesh, ProgramUtil, FillProgram
 import { HexelGrid } from './hexel/hexel-grid';
 import { Scene } from './hexel/scene';
 import { HexelProgram } from './program/hexel-program';
+import { ColorPicker } from './toolbar/color-picker';
+import { Settings } from './toolbar/settings';
 
 let canvasEl = <HTMLCanvasElement> document.getElementById('onscreen-canvas');
 let gl = canvasEl.getContext('webgl');
@@ -26,3 +28,8 @@ wheelEvents.addListener(new WheelZoomTool(1.1));
 let pointerEvents = surface.startDetectingPointerEvents();
 pointerEvents.addListener(new PanTool);
 pointerEvents.addListener(new PinchZoomTool);
+
+let settings = new Settings;
+settings.initControls([
+    new ColorPicker(settings),
+])
