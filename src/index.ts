@@ -3,6 +3,7 @@ import { HexelGrid } from './hexel/hexel-grid';
 import { Scene } from './hexel/scene';
 import { HexelProgram } from './program/hexel-program';
 import { BrushTool } from './tool/brush-tool';
+import { BrushSizeSlider } from './toolbar/brush-size-slider';
 import { ColorPicker } from './toolbar/color-picker';
 import { Settings } from './toolbar/settings';
 
@@ -25,6 +26,7 @@ surface.startRenderLoop();
 let settings = new Settings;
 settings.initControls([
     new ColorPicker(settings),
+    new BrushSizeSlider(settings),
 ])
 
 let wheelEvents = surface.startDetectingWheelEvents();

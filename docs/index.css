@@ -28,24 +28,19 @@ body {
     display: none;
 }
 
-/* #toolbar > .btn-group {
+#toolbar > .btn-group {
     margin-left: 0.5em;
 }
 
-#toolbar button {
-    padding-left: 0.35em;
-    padding-right: 0.35em;
+#toolbar .btn > img {
+    width: 18px;
 }
 
-#toolbar button[data-toggle="dropdown"] {
-    font-size: 18px;
-} */
-
-/* 
 .slider-selection {
     background: #BABABA;
 }
 
+/* 
 .vex-custom-field-wrapper {
     margin: 1em 0;
 }
