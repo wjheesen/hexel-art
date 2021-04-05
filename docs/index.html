@@ -16,7 +16,7 @@
     <div id="toolbar">
         <input id="color-picker" type="text"/>
         <div class="btn-group btn-group-sm" role="group">
-            <button id="brush" class="btn btn-light btn-outline-secondary p-2" aria-text="Brush">
+            <button id="brush" aria-text="Brush">
                 <img src='icon/paint-brush.svg'/>
             </button>
             <div class="btn-group" role="group">
@@ -26,7 +26,18 @@
                         <label">Brush radius: <input name="brushRadius" type="range" min="0" max="50" step="1"/></label>
                     </li>
                 </ul>
-              </div>
+            </div>
+            <button id='pan-tool'>
+                <img src='icon/hand-paper.svg'/>
+            </button>
+            <!-- <div class="btn-group" role="group">
+                <button class="btn btn-light btn-outline-secondary p-1 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <label">Brush radius: <input name="brushRadius" type="range" min="0" max="50" step="1"/></label>
+                    </li>
+                </ul>
+            </div> -->
         </div>
         <!--    <div class="btn-group">
                 <button id="line" class="btn btn-default btn-sm" aria-text="Line tool">

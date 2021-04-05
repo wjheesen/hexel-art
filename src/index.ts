@@ -1,11 +1,12 @@
-import { Camera,  Renderer, Surface, Rect, PolygonMesh, ProgramUtil, FillProgram, PolygonModel, Mat2dBuffer, ColorBuffer, Color, ColorF, Mat2d, WheelZoomTool, PointerEventDetector, PanTool, PinchZoomTool } from '@wjheesen/glib';
+import { Camera,  Renderer, Surface, Rect, PolygonMesh, ProgramUtil, FillProgram, PolygonModel, Mat2dBuffer, ColorBuffer, Color, ColorF, Mat2d, WheelZoomTool, PointerEventDetector, PinchZoomTool, PanTool } from '@wjheesen/glib';
 import { HexelGrid } from './hexel/hexel-grid';
 import { Scene } from './hexel/scene';
 import { HexelProgram } from './program/hexel-program';
-import { BrushTool } from './tool/brush-tool';
+import { Brush } from './tool/brush';
 import { BrushSizeSlider } from './toolbar/brush-size-slider';
 import { ColorPicker } from './toolbar/color-picker';
 import { Settings } from './toolbar/settings';
+import { ToolSelector } from './toolbar/tool-selector';
 
 let canvasEl = <HTMLCanvasElement> document.getElementById('onscreen-canvas');
 let gl = canvasEl.getContext('webgl');
@@ -24,16 +25,19 @@ let surface = new Surface(canvasEl, renderer, scene);
 surface.startRenderLoop();
 
 let settings = new Settings;
-settings.initControls([
-    new ColorPicker(settings),
-    new BrushSizeSlider(settings),
-])
 
 let wheelEvents = surface.startDetectingWheelEvents();
 wheelEvents.addListener(new WheelZoomTool(1.1));
 
 let pointerEvents = surface.startDetectingPointerEvents();
-// pointerEvents.addListener(new PanTool);
 pointerEvents.addListener(new PinchZoomTool);
-pointerEvents.addListener(new BrushTool(grid, settings));
 
+let toolSelector = new ToolSelector(pointerEvents)
+    .addTool('brush', new Brush(grid, settings))
+    .addTool('pan-tool', new PanTool);
+
+settings.initControls([
+    new ColorPicker(settings),
+    new BrushSizeSlider(settings),
+    toolSelector,
+])

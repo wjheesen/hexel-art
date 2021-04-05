@@ -8,4 +8,4 @@ export class Settings {
     initControls(controls: Control[]) {
         controls.forEach(control => control.onInit());
     }
- }
+}

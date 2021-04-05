@@ -1,10 +1,10 @@
-import { Color, Point, Pointer, PointerEventListener } from "@wjheesen/glib";
+import { Color, Pointer, PointerEventListener } from "@wjheesen/glib";
 import { Cube, Directions } from "../hexel/cube";
 import { HexelGrid } from "../hexel/hexel-grid";
 import { Settings } from "../toolbar/settings";
 
 /** TODO: add support for undo/redo */
-export class BrushTool extends PointerEventListener {
+export class Brush extends PointerEventListener {
 
     private previous: Cube;
 

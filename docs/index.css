@@ -36,6 +36,10 @@ body {
     width: 18px;
 }
 
+.tool:not(.tool--selected) > img {
+    opacity: 0.26;
+}
+
 .slider-selection {
     background: #BABABA;
 }
